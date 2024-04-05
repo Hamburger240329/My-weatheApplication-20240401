@@ -20,7 +20,8 @@ class WeatherApp(QMainWindow, form_class):
         self.search_btn.clicked.connect(self.weather_search)
 
     def weather_search(self):
-        inputArea = self.area_input.text()
+        inputArea = self.area_input.text()  # 사용자가 입력한 지역명 텍스트 가져오기
+
 
         weatherHtml = requests.get(f"https://search.naver.com/search.naver?&query={inputArea}날씨")
         # 네이버에서 한남동 날씨로 검색한 결과 html 파일 가져오기
@@ -83,6 +84,7 @@ class WeatherApp(QMainWindow, form_class):
             try:
                 # 해외날씨 처리 구문
                 areaText = weatherSoup.find("h2", {"class" : "title"}).text  # 날씨 지역 이름 가져오기
+
                 areaText = areaText.strip()
                 todayTempAllText = weatherSoup.find("div", {"class":"temperature_text"}).text
                 todayTempAllText = todayTempAllText.strip()
