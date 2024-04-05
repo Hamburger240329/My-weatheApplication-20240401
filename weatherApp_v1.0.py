@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from PyQt5 import uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from PyQt5.QtCore import Qt
 
 import time
 import  threading
@@ -19,6 +20,7 @@ class WeatherApp(QMainWindow, form_class):
         self.setWindowTitle("날씨 검색 프로그램")
         self.setWindowIcon(QIcon("img/weather_icon.png"))
         self.statusBar().showMessage("WEATHER SEARCH APP VER 1.0")
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)  # 윈도우를 항상 맨위로 유지 // 프로그램을 항상 위로
 
         self.search_btn.clicked.connect(self.weather_search)
         self.search_btn.clicked.connect(self.reflashTimer)  # 최초 1번은 호출 되야 돌아가기 때문에 추가(클릭하면 실행)
