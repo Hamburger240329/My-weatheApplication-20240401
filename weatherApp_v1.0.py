@@ -6,6 +6,9 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
+import time
+import  threading
+
 form_class = uic.loadUiType("ui/weatherUi.ui")[0]
 # ui 폴더 내의 디자인된 ui 불러오기 - 디자인 폼 이라고 함
 
@@ -18,13 +21,14 @@ class WeatherApp(QMainWindow, form_class):
         self.statusBar().showMessage("WEATHER SEARCH APP VER 1.0")
 
         self.search_btn.clicked.connect(self.weather_search)
+        self.search_btn.clicked.connect(self.reflashTimer)  # 최초 1번은 호출 되야 돌아가기 때문에 추가(클릭하면 실행)
         self.area_input.returnPressed.connect(self.weather_search)
+        self.area_input.returnPressed.connect(self.reflashTimer)  # 최초 1번은 호출 되야 돌아가기 때문에 추가(엔터치면 실행)
         # 라인에디터 상에서 엔터키 이벤트가 발생시 함수 호출 ->returnPressed
         # 리턴키가 엔터키 - 엔터키를 눌렀을 경우 호출이 발생
 
     def weather_search(self):
         inputArea = self.area_input.text()  # 사용자가 입력한 지역명 텍스트 가져오기
-
 
         weatherHtml = requests.get(f"https://search.naver.com/search.naver?&query={inputArea}날씨")
         # 네이버에서 한남동 날씨로 검색한 결과 html 파일 가져오기
@@ -47,7 +51,6 @@ class WeatherApp(QMainWindow, form_class):
             yesterdayTempText = weatherSoup.find("p", {"class": "summary"}).text  # 어제와의 날씨 비교
             yesterdayTempText = yesterdayTempText[:15].strip()
             print(f"어제날씨비교 : {yesterdayTempText}")
-
 
             todayWeatherText = weatherSoup.find("span", {"class":"weather before_slash"}).text  # 오늘 날씨 맑음
             todayWeatherText = todayWeatherText.strip()
@@ -124,7 +127,7 @@ class WeatherApp(QMainWindow, form_class):
                 self.dust1_info.setText("-")
                 self.dust2_info.setText("-")
 
-    def setWeatherImage(self, weatherText):  # 날씨에 따른 이미지 출력 함수
+    def setWeatherImage(self, weatherTexst):  # 날씨에 따른 이미지 출력 함수
         if weatherText == "맑음":
             weatherImage = QPixmap("img/sun.png")  # 이미지 불러와서 저장하기
             self.weather_img.setPixmap(QPixmap(weatherImage))
@@ -156,6 +159,12 @@ class WeatherApp(QMainWindow, form_class):
             self.weather_img.setPixmap(QPixmap(weatherImage))
         else:
             self.weather_img.setText(weatherText)
+
+
+    def reflashTimer(self):  # 다시 크롤링을 해오는 타이머 함수
+        self.weather_search()  # 날씨 조회 함수 호출
+        threading.Timer(60, self.reflashTimer).start()
+        # (60초, 본인호출). 스타트
 
 
 if __name__ == "__main__":
