@@ -48,8 +48,8 @@ class WeatherApp(QMainWindow, form_class):
             todayTempText = todayTempText[6:12].strip()  # 6번째 글자부터 슬라이싱 후 양쪽 공백 제거
             print(f"현재온도 : {todayTempText}")
 
-            yesterdayTempText = weatherSoup.find("span", {"class":"temperature"}).text  # 어제와의 날씨 비교
-            yesterdayTempText.strip()
+            # yesterdayTempText = weatherSoup.find("span", {"class":"temperature"}).text  # 어제와의 날씨 비교
+            # yesterdayTempText.strip()
             yesterdayTempText = weatherSoup.find("p", {"class": "summary"}).text  # 어제와의 날씨 비교
             yesterdayTempText = yesterdayTempText[:15].strip()
             print(f"어제날씨비교 : {yesterdayTempText}")
@@ -98,8 +98,8 @@ class WeatherApp(QMainWindow, form_class):
                 print(todayTempAllText)
 
                 # todayTempText = todayTempAllText[6:9].strip()  # 해외 도시 현재 온도
-                todaytempertest = weatherSoup.select("div.temperature_text>strong")[0].text
-                todaytempertest = todaytempertest[5:]
+                todayTempText = weatherSoup.select("div.temperature_text>strong")[0].text
+                todayTempText = todayTempText[5:]
 
                 # print(tempertest[5:])
                 # todayWeatherText = todayTempAllText[10:12].strip()  # 해외 도시 날씨 테스트
@@ -129,7 +129,7 @@ class WeatherApp(QMainWindow, form_class):
                 self.dust1_info.setText("-")
                 self.dust2_info.setText("-")
 
-    def setWeatherImage(self, weatherTexst):  # 날씨에 따른 이미지 출력 함수
+    def setWeatherImage(self, weatherText):  # 날씨에 따른 이미지 출력 함수
         if weatherText == "맑음":
             weatherImage = QPixmap("img/sun.png")  # 이미지 불러와서 저장하기
             self.weather_img.setPixmap(QPixmap(weatherImage))
@@ -146,7 +146,7 @@ class WeatherApp(QMainWindow, form_class):
             weatherImage = QPixmap("img/cloud.png")  # 이미지 불러와서 저장하기
             self.weather_img.setPixmap(QPixmap(weatherImage))
 
-        elif "화창" in weatherText:  # 흐름이 포함된 날씨는 모두 구름 이미지가 출력
+        elif "흐림" in weatherText:  # 화창이 포함된 날씨들은 모두 해 이미지가 출력 // 화창 단어가 포함되어 있으면(in) sun 출력
             weatherImage = QPixmap("img/cloud.png")  # 이미지 불러와서 저장하기
             self.weather_img.setPixmap(QPixmap(weatherImage))
 
@@ -164,8 +164,11 @@ class WeatherApp(QMainWindow, form_class):
 
 
     def reflashTimer(self):  # 다시 크롤링을 해오는 타이머 함수
+        print(112)
         self.weather_search()  # 날씨 조회 함수 호출
+        print(114)
         threading.Timer(60, self.reflashTimer).start()
+        print(116)
         # (60초, 본인호출). 스타트
 
 
