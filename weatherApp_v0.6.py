@@ -84,16 +84,24 @@ class WeatherApp(QMainWindow, form_class):
             try:
                 # 해외날씨 처리 구문
                 areaText = weatherSoup.find("h2", {"class" : "title"}).text  # 날씨 지역 이름 가져오기
-
                 areaText = areaText.strip()
                 todayTempAllText = weatherSoup.find("div", {"class":"temperature_text"}).text
                 todayTempAllText = todayTempAllText.strip()
                 print(todayTempAllText)
 
-                todayTempText = todayTempAllText[6:9].strip()  # 해외 도시 현재 온도
-                todayWeatherText = todayTempAllText[10:12].strip()  # 해외 도시 날씨 테스트
-                senseTempText = todayTempAllText[18:].strip()  # 해외 도시 체감 온도
+                # todayTempText = todayTempAllText[6:9].strip()  # 해외 도시 현재 온도
+                todaytempertest = weatherSoup.select("div.temperature_text>strong")[0].text
+                todaytempertest = todaytempertest[5:]
+
+                # print(tempertest[5:])
+                # todayWeatherText = todayTempAllText[10:12].strip()  # 해외 도시 날씨 테스트
+                todayWeatherText = weatherSoup.select("div.temperature_text>p.summary")[0].text
+                # todayWeatherText = todayWeatherText[:3].strip()
+
                 self.setWeatherImage(todayWeatherText)  # 날씨 이미지 출력 함수 호출
+                # senseTempText = todayTempAllText[18:].strip()  # 해외 도시 체감 온도
+                senseTempText = weatherSoup.select("p.summary>span.text>em")[0].text
+                # print(f"체감온도->{senseTempText}")
 
 
                 self.area_title.setText(areaText)
@@ -121,10 +129,23 @@ class WeatherApp(QMainWindow, form_class):
         elif weatherText == "구름많음":
             weatherImage = QPixmap("img/cloud.png")  # 이미지 불러와서 저장하기
             self.weather_img.setPixmap(QPixmap(weatherImage))
+
+        elif "화창" in weatherText:  # 화창이 포함된 날씨들은 모두 해 이미지가 출력 // 화창 단어가 포함되어 있으면(in) sun 출력
+            weatherImage = QPixmap("img/sun.png")  # 이미지 불러와서 저장하기
+            self.weather_img.setPixmap(QPixmap(weatherImage))
+
         elif weatherText == "흐림":
             weatherImage = QPixmap("img/cloud.png")  # 이미지 불러와서 저장하기
             self.weather_img.setPixmap(QPixmap(weatherImage))
+
+        elif "화창" in weatherText:  # 흐름이 포함된 날씨는 모두 구름 이미지가 출력
+            weatherImage = QPixmap("img/cloud.png")  # 이미지 불러와서 저장하기
+            self.weather_img.setPixmap(QPixmap(weatherImage))
+
         elif weatherText == "비":
+            weatherImage = QPixmap("img/rain.png")  # 이미지 불러와서 저장하기
+            self.weather_img.setPixmap(QPixmap(weatherImage))
+        elif weatherText == "소나기":
             weatherImage = QPixmap("img/rain.png")  # 이미지 불러와서 저장하기
             self.weather_img.setPixmap(QPixmap(weatherImage))
         elif weatherText == "눈":
